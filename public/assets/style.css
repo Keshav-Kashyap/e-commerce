@@ -1,0 +1,764 @@
+
+\\navbar ki css
+ .navbar {
+  position: fixed !important;
+  color: white;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background: white;
+  height: 65px;
+top: 0;
+
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+
+
+/* Remove bullets completely */
+.side-menu {
+  top: 65px; /* same as navbar height */
+}
+.sd-menu,
+.sd-submenu {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  margin-left: 18px;
+  
+}
+
+/* Menu items */
+.sd-menu li {
+    \\margin-top: -3px;
+  cursor: pointer;
+      margin-top: 10px;
+    margin-left: 18px;
+    font-size: 19px;
+padding: 6px 5px; 
+  
+  transition: 0.3s;
+}
+
+.sd-menu li:hover {
+  color: #7a2048;
+}
+
+/* Toggle row */
+/* Active section highlight */
+.sd-dropdown.active > .sd-toggle {
+  color: #7a2048;
+    padding: 8px 5px;
+  font-weight: 600;
+}
+
+/* Arrow icon */
+.sd-toggle::after {
+  content: "";
+  font-size: 12px;
+  transition: transform 0.3s ease;
+}
+
+/* Rotate arrow when open */
+.sd-dropdown.active > .sd-toggle::after {
+  transform: rotate(90deg);
+}
+
+/* Submenu animation */
+.sd-submenu {
+  max-height: 0;
+  overflow: hidden;
+      margin-bottom: -19px;
+  padding: 6px 5px; 
+  padding-left: 15px;
+  transition: max-height 0.35s ease;
+}
+
+/* Open state */
+.sd-dropdown.active > .sd-submenu {
+  max-height: 500px; /* enough for content */
+}
+
+/* Submenu items */
+.sd-submenu li {
+  
+  font-size: 14px;
+  padding: 6px 0;  
+  color: #444;
+}
+.sd-logo {
+  padding: 15px 20px;
+  border-bottom: 1px solid pink;
+  background: #fff;
+}
+
+.sd-logo img {
+  width: 150px;
+  
+    margin-top: 24px;
+  transition: 0.3s;
+}
+
+.sd-logo img:hover {
+  transform: scale(1.05);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Container */
+.menu-container {
+  display: flex;
+  align-items: center;
+}
+
+/* Desktop Image */
+.menu-image {
+  height: 40px;
+  cursor: pointer;
+  height: 64px;
+
+  width: 129px;
+}
+
+/* Hamburger Icon */
+.menu-icon {
+  font-size: 24px;
+  cursor: pointer;
+  color: black;
+  display: none; /* hidden by default */
+}
+
+/* 🔥 Responsive Rule */
+@media (max-width: 500px) {
+  .menu-image {
+    display: none; /* hide image */
+  }
+
+  .menu-icon {
+    display: block; /* show hamburger */
+  }
+}
+
+/* Close Button */
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 22px;
+  cursor: pointer;
+  color: black;
+  font-weight: bold;
+  transition: 0.3s;
+  padding-top: 22px;
+  width: 167px;
+  height: 115px;
+  padding-left: 132px;
+}
+
+.close-btn:hover {
+  color: red;
+  \\transform: scale(1.2);
+}
+
+/* Logo */
+.logo img {
+  height: 60px;
+  width: 275px;
+  margin-left: 77px;
+}
+.icons {
+  padding-right: 102px;
+}
+/* Right Icons */
+.icons img {
+  height: 24px;
+  margin-left: 15px;
+  cursor: pointer;
+}
+
+.side-menu {
+  position: fixed;
+  padding-bottom: 120px;
+  top: 0;
+  left: -300px;
+  width: 280px;
+  height: 100%;
+
+  background: white;
+
+  overflow-y: auto;
+  overflow-x: visible;
+
+  transition: 0.3s;
+  z-index: 999; /* keep ONE value */
+  padding-top: 60px;
+}
+
+
+
+
+/* Active Menu */
+.side-menu.active {
+  left: 0;
+  padding-top: 1px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.categories {
+  display: flex;
+  align-items: center;
+  margin-top: 12px;
+  justify-content: center;
+  gap: 40px;
+  padding: 20px;
+  overflow-x: auto;
+}
+
+/* Each item */
+.category {
+  flex: 0 0 auto;
+  text-align: center;
+  width: 130px;
+  cursor: pointer;
+}
+
+/* Circle container */
+.category .circle,
+.category img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;   /* 🔥 perfect circle */
+  object-fit: cover;    /* 🔥 image perfectly fit */
+  display: block;
+  margin: auto;
+  transition: all 0.3s ease;
+}
+
+/* TEXT */
+.category p {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* 🔥 HOVER EFFECT */
+.category:hover img,
+.category:hover .circle {
+  transform: scale(1.1);
+
+  box-shadow: 0 6px 15px rgba(222, 11, 106, 0.61);
+}
+
+
+
+
+
+
+
+
+
+
+
+/* Container */
+.container2 {
+  width: 90%;
+  max-width: 1200px;
+  margin: 30px auto;
+  text-align: center;
+}
+
+/* Heading */
+.main-heading {
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+  color: #064420;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* Product Grid */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+}
+
+/* Product Card */
+.product-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+}
+
+.product-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.product-card h2 {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  color: #064420;
+}
+
+/* Price Styling */
+.price {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #064420;
+}
+
+.old-price {
+  text-decoration: line-through;
+  color: #888;
+  margin-left: 8px;
+}
+
+.discount {
+  color: #d32f2f;
+  font-weight: bold;
+  margin: 8px 0;
+}
+
+/* Button */
+.cart-btn {
+  background: #064420;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.cart-btn:hover {
+  background: #046c3c;
+}
+
+/* Container and Typography */
+.shop-by-bond {
+  font-family: Arial, sans-serif; /* Closest standard font to the image */
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #ffffff;
+}
+
+.section-title {
+  font-size: 28px;
+  font-weight: 400;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+/* Flexbox Grid */
+.bond-container {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+
+  flex-wrap: wrap; /* Allows wrapping on smaller screens */
+}
+
+/* Individual Card Styling */
+.bond-card {
+  width: 200px; /* Adjust based on your preferred sizing */
+  border: 1px solid #e0e0e0;
+    height: 290px;   
+  border-radius: 12px;
+  overflow: hidden;
+
+  background-color: #f9f9f9;
+}
+
+.image-wrapper {
+  width: 100%;
+  aspect-ratio: 1 / 1.1; /* Slightly taller than wide per image */
+  overflow: hidden;
+  
+   object-fit: contain;   /* 🔥 shows full image */
+  background-color: #fff; 
+  border-radius: 12px;
+  padding-left: 5px;
+  padding-top: 5px;
+  padding-right: 5px;
+}
+
+.image-wrapper img {
+  width: 95%;
+ 
+  border-radius: 10px;
+  object-fit: cover;
+  display: block;
+}
+
+/* Label Styling */
+.bond-label {
+  padding: 12px 0;
+  font-size: 16px;
+  color: #333;
+  background-color: #f2f2f2; /* Light grey footer per image */
+  border-top: 1px solid #e0e0e0;
+}
+
+/* Hover Effect for Interactivity */
+.bond-card:hover {
+  cursor: pointer;
+  transform: scale(1.05) translateY(-2px); /* Pops up and grows slightly */
+  box-shadow: 0 20px 30px rgba(207, 36, 229, 0.2); /* Deeper shadow for depth */
+}
+
+.budget-section {
+  font-family: "Segoe UI", Roboto, Helvetica, sans-serif;
+  max-width: 1000px;
+  margin: 40px auto;
+  text-align: center;
+  padding: 20px;
+}
+
+.budget-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 35px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* Flexbox for responsive grid */
+.budget-grid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+  flex-wrap: wrap; /* Mobile friendly */
+}
+
+/* Base Card Design (Different from image) */
+.budget-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 170px;
+  height: 130px;
+  background-color: #ffffff;
+  text-decoration: none;
+  border-radius: 12px; /* Rounded corners */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* Soft natural shadow */
+  border: 1px solid #eaeaea;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smooth hover transition */
+  position: relative;
+  overflow: hidden;
+}
+section.budget-section {
+  border-top: 2px solid black;
+  border-bottom: 2px solid black;
+}
+
+/* Text Styling inside Card */
+.budget-label {
+  font-size: 13px;
+  color: #7f8c8d;
+  margin-bottom: 8px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  z-index: 2;
+}
+
+.budget-price {
+  font-size: 26px;
+  color: #111;
+  font-weight: 700;
+  z-index: 2;
+}
+
+/* The Hover Effect */
+.budget-card:hover {
+  transform: translateY(-8px); /* Card moves slightly up */
+  box-shadow: 0 12px 25px rgba(0, 123, 255, 0.15); /* Shadow becomes deeper and slightly blue */
+  border-color: #007bff; /* Border turns blue */
+}
+
+/* Subtle background gradient change on hover */
+.budget-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #f0f8ff 0%, #ffffff 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.budget-card:hover::before {
+  opacity: 1;
+}
+
+.section-title {
+  font-weight: 500;
+  margin-bottom: 3rem;
+  color: #333;
+}
+
+.recipient-card {
+  position: relative;
+  height: 280px;
+  border-radius: 40px;
+  background: var(--light-pink-bg);
+  overflow: visible; /* Important for overlapping image */
+  margin-bottom: 50px;
+  display: flex;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+
+.recipient-card:hover {
+  transform: translateY(-5px);
+}
+
+/* The dark inner box */
+.inner-content {
+  background: var(--maroon-gradient);
+  height: 80%;
+  width: 85%;
+  border-radius: 30px;
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 30px;
+}
+
+/* The 'Him/Her' label box */
+.label-box {
+  background-color: var(--tan-box);
+  padding: 10px 40px;
+  border-radius: 15px;
+  display: inline-block;
+  width: fit-content;
+  margin-bottom: 15px;
+}
+
+.label-box h3 {
+  margin: 0;
+  color: #7a2048;
+  font-size: 2rem;
+  font-weight: 400;
+}
+
+.shop-now {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.shop-now:hover {
+  color: #eee;
+}
+
+.arrow-icon {
+  background: white;
+  color: #7a2048;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+}
+:root {
+  --maroon-gradient: linear-gradient(135deg, #7a2048 0%, #b34a71 100%);
+  --light-pink-bg: #ffe4e6;
+  --tan-box: #ecd9c6;
+}
+/* Positioning the images */
+.model-img {
+  position: absolute;
+  bottom: 0;
+  right: 10px;
+  height: 110%; /* Makes it taller than the card */
+  z-index: 2;
+}
+
+@media (max-width: 768px) {
+  .recipient-card {
+    height: 220px;
+  }
+  .model-img {
+    height: 105%;
+  }
+  .label-box h3 {
+    font-size: 1.5rem;
+  }
+}
+
+/* FOOTER */
+.footer {
+  border-top: 2px solid black;
+  background: skyblue;
+
+  color: black;
+  padding-top: 50px;
+  margin-top: 50px;
+}
+
+/* Container */
+.footer-container {
+  display: grid;
+
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 30px;
+  width: 90%;
+  margin: auto;
+}
+
+/* Columns */
+.footer-col h3 {
+  margin-bottom: 15px;
+  color: #6b654f; /* gold */
+}
+
+.footer-col p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #6b654f;
+}
+
+/* Logo */
+.footer-logo {
+  font-size: 55px;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 500;
+  font-size: 40px;
+  font-style: italic;
+  margin-left: -37px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em; /* This is key for the luxury look */
+
+  /* Gold Gradient Effect */
+  background: linear-gradient(
+    to right,
+    #bf953f,
+    #fcf6ba,
+    #b38728,
+    #fbf5b7,
+    #aa771c
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  /* Optional: Soft shadow to make it pop against light backgrounds */
+  filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.1));
+  padding-left: 29px;
+  color: #d4af37;
+  font-style: italic;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Links */
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-col ul li {
+  margin: 8px 0;
+}
+
+.footer-col ul li a {
+  text-decoration: none;
+  color: #6b654f;
+  transition: 0.3s;
+}
+
+.footer-col ul li a:hover {
+  color: white;
+}
+
+/* Social Icons */
+.social-icons img {
+  width: 28px;
+  margin-right: 10px;
+  transition: 0.3s;
+}
+
+.social-icons img:hover {
+  transform: scale(1.2);
+}
+
+/* Bottom Bar */
+.footer-bottom {
+  text-align: center;
+  padding: 15px 0;
+  margin-top: 30px;
+  border-top: 1px solid #333;
+  font-size: 14px;
+  color: white;
+  background-color: black;
+}
+
+
+
+
+
+
+
+.mainContent {
+  \\position: relative;
+  \\z-index: 1;
+}
