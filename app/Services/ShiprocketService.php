@@ -5,12 +5,30 @@ namespace App\Services;
 use App\Models\Order;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ShiprocketService
 {
     public function syncOrder(Order $order): array
     {
+        if ($this->isAuthBlocked()) {
+            $message = 'Shiprocket login is temporarily blocked. Try again later.';
+
+            Log::warning('Shiprocket sync skipped: auth temporarily blocked.', [
+                'order_id' => $order->id,
+            ]);
+
+            return [
+                'success' => false,
+                'message' => $message,
+            ];
+        }
+
         if (! $this->isEnabled()) {
+            Log::warning('Shiprocket sync skipped: credentials missing.', [
+                'order_id' => $order->id,
+            ]);
+
             return [
                 'success' => false,
                 'message' => 'Shiprocket credentials are missing.',
@@ -19,12 +37,25 @@ class ShiprocketService
 
         $order->loadMissing('items.product');
 
+        Log::info('Shiprocket sync started.', [
+            'order_id' => $order->id,
+            'payment_method' => $order->payment_method,
+            'item_count' => $order->items->count(),
+        ]);
+
         $response = $this->httpClient()
             ->withToken($this->getToken())
             ->post($this->baseUrl() . '/orders/create/adhoc', $this->buildPayload($order));
 
         if (! $response->successful()) {
             $message = $response->json('message') ?? $response->body() ?? 'Shiprocket order sync failed.';
+
+            Log::warning('Shiprocket order sync failed.', [
+                'order_id' => $order->id,
+                'status' => $response->status(),
+                'message' => $message,
+                'response' => $response->json(),
+            ]);
 
             return [
                 'success' => false,
@@ -38,6 +69,14 @@ class ShiprocketService
             ?? data_get($data, 'data.awb_code')
             ?? data_get($data, 'shipment_id')
             ?? data_get($data, 'data.shipment_id');
+
+        Log::info('Shiprocket order sync succeeded.', [
+            'order_id' => $order->id,
+            'shiprocket_order_id' => data_get($data, 'order_id') ?? data_get($data, 'data.order_id'),
+            'shiprocket_shipment_id' => data_get($data, 'shipment_id') ?? data_get($data, 'data.shipment_id'),
+            'shiprocket_awb' => data_get($data, 'awb_code') ?? data_get($data, 'data.awb_code'),
+            'tracking_id' => $trackingId,
+        ]);
 
         $order->forceFill([
             'shiprocket_order_id' => data_get($data, 'order_id') ?? data_get($data, 'data.order_id'),
@@ -66,6 +105,8 @@ class ShiprocketService
     private function getToken(): string
     {
         return Cache::remember('shiprocket.api.token', now()->addMinutes(50), function () {
+            Log::info('Shiprocket auth request started.');
+
             $response = $this->httpClient()
                 ->post($this->baseUrl() . '/auth/login', [
                     'email' => config('shiprocket.email'),
@@ -73,7 +114,18 @@ class ShiprocketService
                 ]);
 
             if (! $response->successful()) {
-                throw new \RuntimeException($response->json('message') ?? 'Unable to authenticate with Shiprocket.');
+                $message = $response->json('message') ?? $response->body() ?? 'Unable to authenticate with Shiprocket.';
+
+                Log::error('Shiprocket auth failed.', [
+                    'status' => $response->status(),
+                    'message' => $message,
+                ]);
+
+                if ($response->status() === 400 || str_contains(strtolower((string) $message), 'blocked') || str_contains(strtolower((string) $message), 'invalid email and password')) {
+                    Cache::put('shiprocket.api.auth_blocked_until', now()->addMinutes(30), now()->addMinutes(30));
+                }
+
+                throw new \RuntimeException($message);
             }
 
             $token = data_get($response->json(), 'token')
@@ -81,8 +133,14 @@ class ShiprocketService
                 ?? data_get($response->json(), 'access_token');
 
             if (! $token) {
+                Log::error('Shiprocket auth response missing token.', [
+                    'response' => $response->json(),
+                ]);
+
                 throw new \RuntimeException('Shiprocket token was not returned by the API.');
             }
+
+            Log::info('Shiprocket auth succeeded.');
 
             return $token;
         });
@@ -102,6 +160,13 @@ class ShiprocketService
     private function baseUrl(): string
     {
         return rtrim((string) config('shiprocket.base_url'), '/');
+    }
+
+    private function isAuthBlocked(): bool
+    {
+        $blockedUntil = Cache::get('shiprocket.api.auth_blocked_until');
+
+        return $blockedUntil instanceof \DateTimeInterface && now()->lessThan($blockedUntil);
     }
 
     private function buildPayload(Order $order): array

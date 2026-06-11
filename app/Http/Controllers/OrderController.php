@@ -93,8 +93,14 @@ class OrderController extends Controller
                 'estimated_delivery' => $estimatedDate,
             ]);
 
-            $this->saveOrderItems($order, $cartItems);
-            $this->syncOrderToShiprocket($order);
+            $savedItemCount = $this->saveOrderItems($order, $cartItems);
+
+            Log::info('COD order items saved.', [
+                'order_id' => $order->id,
+                'item_count' => $savedItemCount,
+            ]);
+
+            $this->syncOrderToShiprocket($order->fresh(['items.product']));
 
             if (!$request->has('product_id')) { 
                 Cart::where('user_id', Auth::id())->delete(); 
@@ -108,6 +114,14 @@ class OrderController extends Controller
 
         // CASE 2: RAZORPAY
         if ($request->payment_method == 'razorpay') {
+            session()->put('razorpay_checkout_items', $cartItems->map(function ($item) {
+                return [
+                    'product_id' => $item->product_id,
+                    'quantity' => $item->quantity,
+                    'price' => $item->product->price ?? $item->price ?? 0,
+                ];
+            })->values()->all());
+
             $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
             $razorOrder = $api->order->create([
                 'receipt' => 'order_' . time(),
@@ -138,8 +152,25 @@ class OrderController extends Controller
     {
         $cartItems = collect();
         $total = 0;
+        $checkoutItems = session('razorpay_checkout_items', []);
 
-        if ($request->has('product_id') && $request->product_id != null) {
+        if (! empty($checkoutItems)) {
+            $cartItems = collect($checkoutItems)->map(function ($item) {
+                $product = Product::find($item['product_id']);
+
+                $cartItem = new \stdClass();
+                $cartItem->product_id = $item['product_id'];
+                $cartItem->quantity = (int) $item['quantity'];
+                $cartItem->price = (float) ($item['price'] ?? 0);
+                $cartItem->product = $product;
+
+                return $cartItem;
+            });
+
+            foreach ($cartItems as $item) {
+                $total += (float) ($item->price ?: ($item->product->price ?? 0)) * $item->quantity;
+            }
+        } elseif ($request->has('product_id') && $request->product_id != null) {
             $product = Product::findOrFail($request->product_id);
             $qty = $request->quantity ?? 1;
             $total = $product->price * $qty;
@@ -175,8 +206,24 @@ class OrderController extends Controller
             'status' => 'confirmed', 'payment_method' => 'razorpay',
         ]);
 
-        $this->saveOrderItems($order, $cartItems);
-        $this->syncOrderToShiprocket($order);
+        Log::info('Razorpay payment success payload prepared.', [
+            'order_id' => $order->id,
+            'request_product_id' => $request->product_id,
+            'request_quantity' => $request->quantity,
+            'cart_item_count' => $cartItems->count(),
+            'cart_product_ids' => $cartItems->pluck('product_id')->values()->all(),
+            'user_id' => Auth::id(),
+        ]);
+
+        $savedItemCount = $this->saveOrderItems($order, $cartItems);
+
+        Log::info('Razorpay order items saved.', [
+            'order_id' => $order->id,
+            'item_count' => $savedItemCount,
+        ]);
+
+        $this->syncOrderToShiprocket($order->fresh(['items.product']));
+        session()->forget('razorpay_checkout_items');
         if (!$request->has('product_id')) { Cart::where('user_id', Auth::id())->delete(); }
         $this->handleCouponUsage($couponCode);
         session()->forget('coupon');
@@ -196,26 +243,52 @@ class OrderController extends Controller
         }
     }
 
-    private function saveOrderItems($order, $items) {
-        foreach ($items as $item) {
-            $product = Product::find($item->product_id);
-            if($product) {
-                $product->stock = max(0, $product->stock - $item->quantity);
-                $product->save();
+    private function saveOrderItems($order, $items): int {
+        $savedCount = 0;
 
-                OrderItem::create([
+        foreach ($items as $item) {
+            $product = $item->product ?? Product::find($item->product_id);
+
+            if (! $product) {
+                Log::warning('Order item skipped because product was missing.', [
                     'order_id' => $order->id,
                     'product_id' => $item->product_id,
-                    'quantity' => $item->quantity,
-                    'price' => $item->product->price,
                 ]);
+
+                continue;
             }
+
+            $product->stock = max(0, $product->stock - $item->quantity);
+            $product->save();
+
+            OrderItem::create([
+                'order_id' => $order->id,
+                'product_id' => $product->id,
+                'quantity' => $item->quantity,
+                'price' => $product->price,
+            ]);
+
+            $savedCount++;
         }
+
+        return $savedCount;
     }
 
     private function syncOrderToShiprocket(Order $order): void
     {
         try {
+            $order->loadMissing('items.product');
+
+            if ($order->items->isEmpty()) {
+                Log::warning('Shiprocket sync skipped: order has no items.', [
+                    'order_id' => $order->id,
+                ]);
+
+                $order->update(['shiprocket_sync_error' => 'Order has no items to sync.']);
+
+                return;
+            }
+
             $result = app(ShiprocketService::class)->syncOrder($order);
 
             if (! $result['success']) {
