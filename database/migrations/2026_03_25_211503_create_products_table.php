@@ -12,7 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('products', function (Blueprint $table) {
-            $table->foreignId('category_id')->nullable()->constrained()->onDelete('cascade');
+
+            // Primary Key
+            $table->id();
+
+            // Category Relation
+            $table->foreignId('category_id')
+                ->nullable()
+                ->constrained('categories')
+                ->onDelete('cascade');
 
             // =====================
             // PRODUCT DETAILS
@@ -21,7 +29,6 @@ return new class extends Migration
 
             $table->text('description')->nullable();
 
-            // 🔥 FIXED (decimal price)
             $table->decimal('price', 10, 2);
 
             $table->string('image')->nullable();
@@ -31,7 +38,6 @@ return new class extends Migration
             // =====================
             $table->integer('stock')->default(0);
 
-            // 🔥 indexed for fast filtering
             $table->string('category')->nullable()->index();
 
             $table->timestamps();

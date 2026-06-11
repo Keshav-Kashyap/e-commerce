@@ -19,8 +19,7 @@ class ShiprocketService
 
         $order->loadMissing('items.product');
 
-        $response = Http::acceptJson()
-            ->asJson()
+        $response = $this->httpClient()
             ->withToken($this->getToken())
             ->post($this->baseUrl() . '/orders/create/adhoc', $this->buildPayload($order));
 
@@ -67,8 +66,7 @@ class ShiprocketService
     private function getToken(): string
     {
         return Cache::remember('shiprocket.api.token', now()->addMinutes(50), function () {
-            $response = Http::acceptJson()
-                ->asJson()
+            $response = $this->httpClient()
                 ->post($this->baseUrl() . '/auth/login', [
                     'email' => config('shiprocket.email'),
                     'password' => config('shiprocket.password'),
@@ -88,6 +86,17 @@ class ShiprocketService
 
             return $token;
         });
+    }
+
+    private function httpClient()
+    {
+        $client = Http::acceptJson()->asJson();
+
+        if (app()->environment('local')) {
+            $client = $client->withoutVerifying();
+        }
+
+        return $client;
     }
 
     private function baseUrl(): string
