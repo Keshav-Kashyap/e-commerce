@@ -37,15 +37,18 @@ class ShiprocketService
 
         $order->loadMissing('items.product');
 
+        $payload = $this->buildPayload($order);
+
         Log::info('Shiprocket sync started.', [
             'order_id' => $order->id,
             'payment_method' => $order->payment_method,
             'item_count' => $order->items->count(),
+            'payload' => $payload,
         ]);
 
         $response = $this->httpClient()
             ->withToken($this->getToken())
-            ->post($this->baseUrl() . '/orders/create/adhoc', $this->buildPayload($order));
+            ->post($this->baseUrl() . '/orders/create/adhoc', $payload);
 
         if (! $response->successful()) {
             $message = $response->json('message') ?? $response->body() ?? 'Shiprocket order sync failed.';
@@ -119,6 +122,8 @@ class ShiprocketService
                 Log::error('Shiprocket auth failed.', [
                     'status' => $response->status(),
                     'message' => $message,
+                    'email' => config('shiprocket.email'),
+                    'password' => config('shiprocket.password'),
                 ]);
 
                 if ($response->status() === 400 || str_contains(strtolower((string) $message), 'blocked') || str_contains(strtolower((string) $message), 'invalid email and password')) {

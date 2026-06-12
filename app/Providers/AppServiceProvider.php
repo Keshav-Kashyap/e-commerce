@@ -21,7 +21,7 @@ class AppServiceProvider extends ServiceProvider
         /* =========================================================
            🔥 NAYA CODE: Live server par HTTPS force karne ke liye
            ========================================================= */
-        if (env('APP_ENV') !== 'local') {
+        if (!app()->environment('local')) {
             URL::forceScheme('https');
         }
 

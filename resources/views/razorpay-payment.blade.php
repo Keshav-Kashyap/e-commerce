@@ -64,6 +64,13 @@
             <input type="hidden" name="email" value="{{ $email }}">
             <input type="hidden" name="phone" value="{{ $phone }}">
             <input type="hidden" name="address" value="{{ $address }}">
+            <input type="hidden" name="pincode" value="{{ $pincode }}">
+            <input type="hidden" name="city" value="{{ $city }}">
+            <input type="hidden" name="state" value="{{ $state }}">
+            @if(isset($product_id))
+                <input type="hidden" name="product_id" value="{{ $product_id }}">
+                <input type="hidden" name="quantity" value="{{ $quantity }}">
+            @endif
         </form>
 
         <button id="rzp-button" class="btn-pay">Pay Now</button>
